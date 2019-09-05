@@ -1,7 +1,71 @@
-" Neovim
-if has('nvim')
-  tnoremap <Esc> <C-\><C-n>
-endif
+" Specify a directory for plugins
+" - For Neovim: ~/.local/share/nvim/plugged
+" - Avoid using standard Vim directory names like 'plugin'
+call plug#begin('~/.vim/plugged')
+
+" Make sure you use single quotes
+
+Plug 'scrooloose/nerdtree'
+Plug 'vim-airline/vim-airline'
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'ajh17/vimcompletesme'
+
+" Initialize plugin system
+call plug#end()
+
+" Enable filetype detection
+filetype on
+
+" Set the filetype based on the file's extension, but only if
+" 'filetype' has not already been set
+autocmd BufNewFile,BufRead *.def set syntax=cpp
+
+" LLVM Makefiles can have names such as Makefile.rules or TEST.nightly.Makefile,
+" so it's important to categorize them as such.
+augroup filetype
+  au! BufRead,BufNewFile *Makefile* set filetype=make
+augroup END
+
+" Enable syntax highlighting for LLVM files. To use, copy
+" utils/vim/syntax/llvm.vim to ~/.vim/syntax .
+augroup filetype
+  au! BufRead,BufNewFile *.ll     set filetype=llvm
+augroup END
+
+" Enable syntax highlighting for tablegen files. To use, copy
+" utils/vim/syntax/tablegen.vim to ~/.vim/syntax .
+augroup filetype
+  au! BufRead,BufNewFile *.td     set filetype=tablegen
+augroup END
+
+" In Makefiles, don't expand tabs to spaces, since we need the actual tabs
+autocmd FileType make set noexpandtab
+
+" Airline
+set t_Co=256
+let g:airline_powerline_fonts = 1
+let g:bufferline_echo = 0
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_left_sep = ''
+let g:airline_right_sep = ''
+
+" YCM
+let g:ycm_confirm_extra_conf = 0
+let g:ycm_autoclose_preview_window_after_completion = 1
+let g:ycm_autoclose_preview_window_after_insertion = 1
+"let g:ycm_global_ycm_extra_conf = '/home/szelethus/.vim/ycm_extra_conf.jsondb/ycm_extra_conf.jsondb.py'
+
+" NerdTree
+" Autostart :
+" autocmd vimenter * NERDTree
+
+" Key to toggle Nerd Tree
+map <C-n> :NERDTreeToggle<CR>
+
+" Clang Format
+map <C-K> :pyf ~/Documents/clang6/bin/clang-format.py<cr>
+imap <C-K> <c-o>:pyf ~/Documents/clang6/bin/clang-format.py<cr>
 
 " Performance for Raspberry or other low end systems.
 " Also turn line numbering off!
@@ -10,10 +74,19 @@ endif
 " set norelativenumber
 " syntax sync minlines=256
 
+
 " General
 set nocompatible
 set history=7000
 set backspace=indent,eol,start
+
+if has ('mouse')
+  set mouse=a
+endif
+
+" Theme
+set background=dark
+colorscheme molokai
 
 " Syntax highlighting
 syntax on
@@ -21,11 +94,11 @@ filetype plugin indent on
 
 " Numbering
 set number
-"set relativenumber
+set relativenumber
 
-" Preserve a changed buffer if a new file is opened rather than forcing a
-" write or undo.
 set hidden
+
+au BufReadPost *.def set syntax=ini
 
 " Set to auto read when a file is changed from the outside
 set autoread
@@ -36,7 +109,7 @@ set showcmd
 
 " Show line and column
 set ruler
-" Show the 80 column limit
+" Show the column limit
 set colorcolumn=80
 
 " highlighting search
@@ -57,7 +130,7 @@ set mouse=a
 
 " Set the command window height to 2 lines, to avoid many cases of having
 " to "press <Enter> to continue"
-set cmdheight=2
+" set cmdheight=2
 
 " tabs to spaces
 set expandtab
@@ -72,21 +145,20 @@ set showmatch
 " Matching angle brackets for metaprograms
 set matchpairs+=<:>
 
-" Ignore compiled files
-set wildignore=*.o,*~,*.pyc
+" For airline
+set laststatus=2
 
-" Show trailing whitespaces.
-set list
-set listchars=tab:>.,trail:.,extends:#,nbsp:.
+" Ignore compiled files
+set wildignore=*.o,*~,*.pyc,*.out
 
 " No annoying sound on errors
-"set noerrorbells
-"set novisualbell
+set noerrorbells
+set novisualbell
 
 " Turn backup off, since most stuff is in SVN, git et.c anyway...
-"set nobackup
-"set nowb
-"set noswapfile
+set nobackup
+set nowb
+set noswapfile
 
 " Return to last edit position when opening files (You want this!)
 autocmd BufReadPost *
@@ -95,15 +167,6 @@ autocmd BufReadPost *
      \ endif
 " Remember info about open buffers on close
 set viminfo^=%
-
-" Ensure that the viminfo file is hidden after a leave
-" (This is NOT automatic on Windows...)
-if has("win32")
-  autocmd VimLeave * !attrib +h ~/.viminfo
-elseif has("unix")
-  " But when ran in Git Bash, it is NOT a 'win32' environment...
-  autocmd VimLeave * !if [ "$(type -t attrib)" == 'file' ]; then attrib +h ~/.viminfo; fi
-endif
 
 " Smart way to move between windows
 map <C-j> <C-W>j
@@ -116,41 +179,19 @@ map <C-l> <C-W>l
 "map <left> <nop>
 "map <right> <nop>
 
+" Change leader from '\' to '-'
+map <Space> <Leader>
+
 noremap  <buffer> <silent> k gk
 noremap  <buffer> <silent> j gj
 noremap  <buffer> <silent> gk k
 noremap  <buffer> <silent> gj j
 
 " Buffer switch
-nnoremap <F2> :buffers<CR>:buffer<Space>
-nnoremap <F3> :bprevious <CR>
-nnoremap <F4> :bnext <CR>
+nnoremap <F3> :bnext <CR>
+nnoremap <F2> :bprevious <CR>
+nnoremap <F4> :buffers<CR>:buffer<Space>
 
-" Close the current buffer.
 command Bc bp|bd#
-
-" Clear highlighted searches.
 command C let @/=""
-
-" Quickly turn paste mode on or off
-command Pon set paste
-command Poff set nopaste
-
-" Folding control.
-set nofoldenable " Off by default.
-nmap <C-S-o> :foldopen <CR>
-nmap <C-S-p> :foldclose <CR>
-
-" Only do this part when compiled with support for autocommands.
-if has("autocmd")
-    " Use filetype detection and file-based automatic indenting.
-    filetype plugin indent on
-
-    " Use actual tab chars in Makefiles. They mess up when non tabs are used.
-    autocmd FileType make set tabstop=8 shiftwidth=8 softtabstop=0 noexpandtab
-endif
-
-" Load additional configuration files for plugins
-for f in split(glob('~/.vim/config/*.vim'), '\n')
-    exe 'source' f
-endfor
+autocmd VimLeave * call system("xsel -ib", getreg('+'))

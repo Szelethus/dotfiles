@@ -1,0 +1,14 @@
+description: A minimalist Vim plugin manager.
+prepare:
+  - action: git clone
+    repository: "https://github.com/junegunn/vim-plug"
+install:
+  - action: make dirs
+    dirs:
+      - "$HOME/.vim/autoload"
+      - "$HOME/.vim/bundle"
+      - "$HOME/.vim/config"
+  - action: copy
+    file: "$TEMPORARY_DIR/vim-plug/plug.vim"
+    to: "$HOME/.vim/autoload/plug.vim"
+
