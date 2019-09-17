@@ -7,9 +7,7 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'scrooloose/nerdtree'
 Plug 'vim-airline/vim-airline'
-Plug 'prabirshrestha/async.vim'
-Plug 'prabirshrestha/vim-lsp'
-Plug 'ajh17/vimcompletesme'
+Plug 'ycm-core/YouCompleteMe'
 
 " Initialize plugin system
 call plug#end()
@@ -30,13 +28,13 @@ augroup END
 " Enable syntax highlighting for LLVM files. To use, copy
 " utils/vim/syntax/llvm.vim to ~/.vim/syntax .
 augroup filetype
-  au! BufRead,BufNewFile *.ll     set filetype=llvm
+  au! BufRead,BufNewFile *.ll   set filetype=llvm
 augroup END
 
 " Enable syntax highlighting for tablegen files. To use, copy
 " utils/vim/syntax/tablegen.vim to ~/.vim/syntax .
 augroup filetype
-  au! BufRead,BufNewFile *.td     set filetype=tablegen
+  au! BufRead,BufNewFile *.td   set filetype=tablegen
 augroup END
 
 " In Makefiles, don't expand tabs to spaces, since we need the actual tabs
@@ -54,6 +52,10 @@ let g:airline_right_sep = ''
 let g:ycm_confirm_extra_conf = 0
 let g:ycm_autoclose_preview_window_after_completion = 1
 let g:ycm_autoclose_preview_window_after_insertion = 1
+
+let g:ycm_clangd_binary_path = '/home/eumakri/Documents/clang-9-rc3/stage1/bin/clangd'
+let g:ycm_clangd_uses_ycmd_caching = 0
+let g:ycm_clangd_args = ['-log=verbose', '-pretty', '--background-index']
 "let g:ycm_global_ycm_extra_conf = '/home/szelethus/.vim/ycm_extra_conf.jsondb/ycm_extra_conf.jsondb.py'
 
 " NerdTree
@@ -62,10 +64,6 @@ let g:ycm_autoclose_preview_window_after_insertion = 1
 
 " Key to toggle Nerd Tree
 map <C-n> :NERDTreeToggle<CR>
-
-" Clang Format
-map <C-K> :pyf ~/Documents/clang6/bin/clang-format.py<cr>
-imap <C-K> <c-o>:pyf ~/Documents/clang6/bin/clang-format.py<cr>
 
 " Performance for Raspberry or other low end systems.
 " Also turn line numbering off!
@@ -162,25 +160,19 @@ set noswapfile
 
 " Return to last edit position when opening files (You want this!)
 autocmd BufReadPost *
-     \ if line("'\"") > 0 && line("'\"") <= line("$") |
-     \   exe "normal! g`\"" |
-     \ endif
+   \ if line("'\"") > 0 && line("'\"") <= line("$") |
+   \   exe "normal! g`\"" |
+   \ endif
 " Remember info about open buffers on close
 set viminfo^=%
 
-" Smart way to move between windows
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
-
-"map <up> <nop>
-"map <down> <nop>
-"map <left> <nop>
-"map <right> <nop>
-
-" Change leader from '\' to '-'
+" Change leader from '\' to ' '
 map <Space> <Leader>
+
+map <Leader>yi :YcmCompleter GoToInclude<CR>
+map <Leader>yj :YcmCompleter GoToDefinition<CR>
+map <Leader>yf :YcmCompleter GoToReferences<CR>
+map <Leader>yc :YcmCompleter GetDoc<CR>
 
 noremap  <buffer> <silent> k gk
 noremap  <buffer> <silent> j gj
@@ -193,5 +185,4 @@ nnoremap <F2> :bprevious <CR>
 nnoremap <F4> :buffers<CR>:buffer<Space>
 
 command Bc bp|bd#
-command C let @/=""
 autocmd VimLeave * call system("xsel -ib", getreg('+'))
