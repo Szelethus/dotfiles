@@ -13,9 +13,12 @@ alias fse='grep -RnwIi "." -e'
 alias conflict='vim $(git diff --name-only | uniq)'
 alias lastlocalbranch='git log master~1... --pretty=oneline --no-merges --abbrev-commit --no-color --decorate | grep -E "\(.*\,[^/]*\)|\([^ /]*\)" -m1 -o | grep "[^(].*[^)]" -o | awk '"'"'NF{ print $NF }'"'"''
 alias editbranch='vim $(git diff --name-only $(lastlocalbranch))'
+alias diffbranch='git diff $(lastlocalbranch)'
+alias formatbranch='diffbranch --no-color -U0 | /home/eumakri/Documents/clang-9-rc3/clang/tools/clang-format/clang-format-diff.py -i -p1  -binary /home/eumakri/Documents/clang-9-rc3/pgo_build/bin/clang-format'
 alias svncolordiff='svn diff | colordiff | less -R'
 alias activate='source ~/codechecker/venv/bin/activate'
 alias editpackagelayout='vim /home/szelethus/codechecker/build/CodeChecker/config/package_layout.json'
+
 
 # Kill all Python interpreters running under the current shell.
 alias killpython="ps -opid,cmd | tail -n +2 | grep python | awk '{print \$1 }' | xargs kill -2"
