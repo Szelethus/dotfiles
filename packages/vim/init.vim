@@ -171,8 +171,15 @@ map <Space> <Leader>
 
 map <Leader>yi :YcmCompleter GoToInclude<CR>
 map <Leader>yj :YcmCompleter GoToDefinition<CR>
-map <Leader>yf :YcmCompleter GoToReferences<CR>
+map <Leader>yh :YcmCompleter GoToReferences<CR>
+map <Leader>yf :YcmCompleter FixIt<CR>
 map <Leader>yc :YcmCompleter GetDoc<CR>
+map <Leader>yw :YcmCompleter RefactorRename 
+
+map <Leader>yr :YcmRestartServer<CR>
+map <Leader>yn :YcmForceCompileAndDiagnostics<CR>
+
+map <Leader>yd :YcmDiags<CR>
 
 noremap  <buffer> <silent> k gk
 noremap  <buffer> <silent> j gj
@@ -185,4 +192,7 @@ nnoremap <F2> :bprevious <CR>
 nnoremap <F4> :buffers<CR>:buffer<Space>
 
 command Bc bp|bd#
+
+map <C-x> :Bc<CR>
+
 autocmd VimLeave * call system("xsel -ib", getreg('+'))

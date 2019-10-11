@@ -10,6 +10,13 @@ alias ..='cd ..'
 # Usage: fse "my_string_to_find".
 alias fse='grep -RnwIi "." -e'
 
+alias conflict='vim $(git diff --name-only | uniq)'
+alias lastlocalbranch='git log master~1... --pretty=oneline --no-merges --abbrev-commit --no-color --decorate | grep -E "\(.*\,[^/]*\)|\([^ /]*\)" -m1 -o | grep "[^(].*[^)]" -o | awk '"'"'NF{ print $NF }'"'"''
+alias editbranch='vim $(git diff --name-only $(lastlocalbranch))'
+alias svncolordiff='svn diff | colordiff | less -R'
+alias activate='source ~/codechecker/venv/bin/activate'
+alias editpackagelayout='vim /home/szelethus/codechecker/build/CodeChecker/config/package_layout.json'
+
 # Kill all Python interpreters running under the current shell.
 alias killpython="ps -opid,cmd | tail -n +2 | grep python | awk '{print \$1 }' | xargs kill -2"
 

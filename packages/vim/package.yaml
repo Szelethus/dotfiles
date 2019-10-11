@@ -19,3 +19,7 @@ install:
     files:
       - "$TEMPORARY_DIR/molokai/colors/molokai.vim"
     to: "$HOME/.vim/colors"
+  - action: shell all
+    commands:
+      - "vim -c PlugInstall -c q! -c q!"
+      - "$HOME/.vim/plugged/YouCompleteMe/install.py --clangd-completer"
