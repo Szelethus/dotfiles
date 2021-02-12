@@ -1,16 +1,38 @@
-" Specify a directory for plugins
-" - For Neovim: ~/.local/share/nvim/plugged
-" - Avoid using standard Vim directory names like 'plugin'
-call plug#begin('~/.vim/plugged')
+set nocompatible              " be iMproved, required
+filetype off                  " required
 
-" Make sure you use single quotes
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
 
-Plug 'scrooloose/nerdtree'
-Plug 'vim-airline/vim-airline'
-Plug 'ycm-core/YouCompleteMe'
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
 
-" Initialize plugin system
-call plug#end()
+" The following are examples of different formats supported.
+
+Plugin 'scrooloose/nerdtree'
+Plugin 'vim-airline/vim-airline'
+Plugin 'Valloric/YouCompleteMe'
+Plugin 'rdnetto/YCM-Generator'
+Plugin 'lyuts/vim-rtags'
+Plugin 'vim-latex/vim-latex'
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
+"
+" Brief help
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line
 
 " Enable filetype detection
 filetype on
@@ -28,13 +50,13 @@ augroup END
 " Enable syntax highlighting for LLVM files. To use, copy
 " utils/vim/syntax/llvm.vim to ~/.vim/syntax .
 augroup filetype
-  au! BufRead,BufNewFile *.ll   set filetype=llvm
+  au! BufRead,BufNewFile *.ll     set filetype=llvm
 augroup END
 
 " Enable syntax highlighting for tablegen files. To use, copy
 " utils/vim/syntax/tablegen.vim to ~/.vim/syntax .
 augroup filetype
-  au! BufRead,BufNewFile *.td   set filetype=tablegen
+  au! BufRead,BufNewFile *.td     set filetype=tablegen
 augroup END
 
 " In Makefiles, don't expand tabs to spaces, since we need the actual tabs
@@ -48,15 +70,22 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline_left_sep = ''
 let g:airline_right_sep = ''
 
-" YCM
-let g:ycm_confirm_extra_conf = 0
+"===------------------------------- YCM ------------------------------------==="
 let g:ycm_autoclose_preview_window_after_completion = 1
 let g:ycm_autoclose_preview_window_after_insertion = 1
-
-let g:ycm_clangd_binary_path = '/home/eumakri/Documents/clang-9-rc3/stage1/bin/clangd'
+let g:ycm_clangd_binary_path = '/home/szelethus/Documents/pgo_llvm_project/pgo_build/bin/clangd'
 let g:ycm_clangd_uses_ycmd_caching = 0
-let g:ycm_clangd_args = ['-log=verbose', '-pretty', '--background-index']
-"let g:ycm_global_ycm_extra_conf = '/home/szelethus/.vim/ycm_extra_conf.jsondb/ycm_extra_conf.jsondb.py'
+let g:ycm_clangd_args=['-log=verbose', '-pretty', '--background-index']
+
+noremap <Leader>yd :YcmForceCompileAndDiagnostics<CR> :YcmDiags<CR>
+noremap <Leader>yr :YcmRestartServer<CR>
+noremap <Leader>yt :YcmCompleter GetType<CR>
+noremap <Leader>yc :YcmCompleter GetDoc<CR>
+noremap <Leader>yf :YcmCompleter FixIt<CR>
+noremap <Leader>yo :YcmCompleter Format<CR>
+noremap <Leader>yw :YcmCompleter RefactorRename 
+noremap <Leader>yh :YcmCompleter GoToReferences<CR>
+noremap <Leader>yj :YcmCompleter GoToDefinition<CR>
 
 " NerdTree
 " Autostart :
@@ -64,6 +93,10 @@ let g:ycm_clangd_args = ['-log=verbose', '-pretty', '--background-index']
 
 " Key to toggle Nerd Tree
 map <C-n> :NERDTreeToggle<CR>
+
+" Clang Format
+map <C-K> :pyf ~/Documents/clang6/bin/clang-format.py<cr>
+imap <C-K> <c-o>:pyf ~/Documents/clang6/bin/clang-format.py<cr>
 
 " Performance for Raspberry or other low end systems.
 " Also turn line numbering off!
@@ -160,26 +193,30 @@ set noswapfile
 
 " Return to last edit position when opening files (You want this!)
 autocmd BufReadPost *
-   \ if line("'\"") > 0 && line("'\"") <= line("$") |
-   \   exe "normal! g`\"" |
-   \ endif
+     \ if line("'\"") > 0 && line("'\"") <= line("$") |
+     \   exe "normal! g`\"" |
+     \ endif
 " Remember info about open buffers on close
 set viminfo^=%
 
-" Change leader from '\' to ' '
+" Smart way to move between windows
+map <C-j> <C-W>j
+map <C-k> <C-W>k
+map <C-h> <C-W>h
+map <C-l> <C-W>l
+
+map <C-x> :Bc<CR>
+
+nnoremap <leader>rm :map <leader>r<CR>
+
+
+"map <up> <nop>
+"map <down> <nop>
+"map <left> <nop>
+"map <right> <nop>
+
+" Change leader from '\' to '-'
 map <Space> <Leader>
-
-map <Leader>yi :YcmCompleter GoToInclude<CR>
-map <Leader>yj :YcmCompleter GoToDefinition<CR>
-map <Leader>yh :YcmCompleter GoToReferences<CR>
-map <Leader>yf :YcmCompleter FixIt<CR>
-map <Leader>yc :YcmCompleter GetDoc<CR>
-map <Leader>yw :YcmCompleter RefactorRename 
-
-map <Leader>yr :YcmRestartServer<CR>
-map <Leader>yn :YcmForceCompileAndDiagnostics<CR>
-
-map <Leader>yd :YcmDiags<CR>
 
 noremap  <buffer> <silent> k gk
 noremap  <buffer> <silent> j gj
@@ -192,7 +229,16 @@ nnoremap <F2> :bprevious <CR>
 nnoremap <F4> :buffers<CR>:buffer<Space>
 
 command Bc bp|bd#
-
-map <C-x> :Bc<CR>
-
+command C let @/=""
 autocmd VimLeave * call system("xsel -ib", getreg('+'))
+
+nmap <F1> <nop>
+
+"vim-latex
+
+let g:Tex_EnvironmentMaps = 0
+let g:Tex_EnvironmentMenus = 0
+let g:Tex_FontMaps = 0
+let g:Tex_FontMenus = 0
+let g:Tex_SectionMaps = 0
+let g:Tex_SectionMenus = 0
